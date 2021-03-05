@@ -7,6 +7,7 @@ import path from 'path';
 export default {
   input: 'src/index.ts',
   output: {
+    // amd iife commonjs umd
     format: 'iife', //  打包成一子执行函数
     file: path.resolve(__dirname, 'dist/bundle.js'), // 出口文件
     // 希望能看到源码 根据源码产生映射文件
