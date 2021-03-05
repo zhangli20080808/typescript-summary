@@ -1,0 +1,27 @@
+{
+  "name": "typescript-summary",
+  "version": "1.0.0",
+  "description": "typescript学习总结",
+  "main": "index.js",
+  "scripts": {
+    "dev": "rollup -c -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhangli20080808/typescript-summary.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zhangli20080808/typescript-summary/issues"
+  },
+  "homepage": "https://github.com/zhangli20080808/typescript-summary#readme",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^11.2.0",
+    "rollup": "^2.40.0",
+    "rollup-plugin-serve": "^1.1.0",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "typescript": "^4.2.3"
+  }
+}
