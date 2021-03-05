@@ -70,5 +70,13 @@ v = undefined;
 // let n = MyError(); // n->never
 
 // Symbol BigInt Symbol表示独一无二 比如做一些常量 或者一些私有属性 都可以使用Symbol
-let s1 = Symbol('zl')
-let s2 = Symbol('zl')
+let s1 = Symbol('zl');
+let s2 = Symbol('zl');
+
+//  注意 类型的问题  1. 类型推断 2. 类型问题
+let number1: number = 123;
+let number2: Number = 123;
+let number3: number = Number(11);
+// let number4 :number = new Number(11) {}  错误语法  不能把实例赋值给基本类型
+// 类也是一个类型 可以描述实例
+let number5: Number = new Number(11);
