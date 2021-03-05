@@ -49,3 +49,26 @@ let u: undefined = undefined;
 let v: void;
 // v= null // 严格模式报错
 v = undefined;
+
+// never类型 永远不是任何类型的子类型 可以把never赋值给任意类型
+// 永远达不到有三种情况 1.错误 2. 死循环 3.类型判断时会出现never
+
+// function MyError(): never {
+//   throw new Error('xxx');
+// }
+// function byType(val: string | number) {
+//   if (typeof val === 'string') {
+//     val;
+//   } else if (typeof val === 'number') {
+//     val;
+//   } else {
+//     // 取不到类型或值得时候 都是never
+//     val; // never  主要永远完整性和标识出错的情况
+//   }
+// }
+
+// let n = MyError(); // n->never
+
+// Symbol BigInt Symbol表示独一无二 比如做一些常量 或者一些私有属性 都可以使用Symbol
+let s1 = Symbol('zl')
+let s2 = Symbol('zl')
