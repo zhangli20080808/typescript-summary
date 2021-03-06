@@ -108,4 +108,3 @@ function toArray(value: number | string) {
       .map((item) => parseInt(item));
   }
 }
-// ts中的类
