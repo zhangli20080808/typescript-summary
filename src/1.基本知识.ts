@@ -8,15 +8,24 @@ tuple.push('name');
 // 数组 存放一类类型的集合
 let arr1: number[] = [1, 2, 3];
 
-// 联合类型可以看做并集 既能使用字符串 也能使用数字
+// 联合类型可以看做并集 既能使用字符串 也能使用数字 当没有初始化的时候 只能调用两者中公有的方法
 let arr3: (string | number)[] = [1, 2, 3, '4'];
 let arr4: Array<string | number> = [1, 2, 3, '4'];
 
+let ele: HTMLElement | null = document.getElementById('id');
+ele!.style.color = 'red'; // ! 非空断，一定有值 ts语法只能存在ts中
+// ele?.style.color = 'red'; // ele&&ele.style
+
+// 类型断言 不能断言不存在的属性
+(ele as HTMLElement).style.color = 'green';
+
+// 类型别名 type
+
 // 以往
-// export const STATUS = {
-//   na: 'xxx',
-//   nb: 'bbb',
-// };
+export const STATUS = {
+  //   na: 'xxx',
+  //   nb: 'bbb',
+};
 
 // 枚举类型
 enum USER_ROLE {
@@ -80,3 +89,23 @@ let number3: number = Number(11);
 // let number4 :number = new Number(11) {}  错误语法  不能把实例赋值给基本类型
 // 类也是一个类型 可以描述实例
 let number5: Number = new Number(11);
+
+// 函数类型 1.声明 2.表达式  可选参数 剩余参数
+let sum = (...args: number[]) => {};
+sum(1, 2, 3, 4);
+
+// 函数重载 主要是ts中的 和js没啥关系 比如需要根据参数的不同 限制他的功能 中间不能包含其他语句
+// 我们希望 value是number的时候返回number数组 是string的时候返回string数组
+function toArray(value: string): string[];
+function toArray(value: number): number[];
+function toArray(value: number | string) {
+  if (typeof value === 'string') {
+    return value.split('');
+  } else {
+    return value
+      .toString()
+      .split('')
+      .map((item) => parseInt(item));
+  }
+}
+// ts中的类
