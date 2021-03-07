@@ -15,92 +15,42 @@
     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
     PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
+    /* global Reflect, Promise */
 
-    function __decorate(decorators, target, key, desc) {
-        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-        return c > 3 && r && Object.defineProperty(target, key, r), r;
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+
+    function __extends(d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
 
-    // 装饰器  拓展属性和方法 或者重写 装饰器就是函数 函数返回函数 执行完成之后还是函数
-    function aaa(target) {
-        console.log('2');
-    }
-    function xxx(target) {
-        console.log(1);
-        // 修饰类本身当前参数就是类 一个参数
-        target.prototype.say = function () {
-            console.log('say');
-        };
-    }
-    /**
-     *
-     * @param target 原型
-     * @param key 属性
-     */
-    function toUpperCase(target, key) {
-        console.log(target, key);
-        var value = target[key];
-        Object.defineProperty(target, key, {
-            get: function () {
-                return value.toUpperCase();
-            },
-            set: function (newVal) {
-                value = newVal;
-            },
-        });
-    }
-    function double(num) {
-        return function (target, key) {
-            //修饰静态属性 target 类
-            var value = target[key];
-            Object.defineProperty(target, key, {
-                get: function () {
-                    return value * num;
-                },
-            });
-        };
-    }
-    /**
-     * 将 getName 转换为可枚举属性
-     * @param target
-     * @param key
-      // configurable: true enumerable: true value: ƒ () writable: true
-     * @param description Object.defineProperty 的第三个参数  configurable enumerable  value
-     */
-    function toEnum(target, key, description) {
-        console.log(target, key, description);
-        // configurable: true enumerable: true value: ƒ () writable: true
-        description.enumerable = false;
-    }
-    var Person = /** @class */ (function () {
-        function Person() {
-            // 比如初始化的时候装饰属性
-            this.name = ' zhangLi'; // 直接默认走set
+    // 接口
+    // 抽象类 不能为实例化 只有抽象类里面的内容 可以被标记 abstract 子类也必须要实现
+    var Animal = /** @class */ (function () {
+        function Animal() {
         }
-        Person.prototype.getName = function () { };
-        Person.age = 10; // 修改类静态属性时 不会走set方法
-        __decorate([
-            toUpperCase
-        ], Person.prototype, "name", void 0);
-        __decorate([
-            toEnum
-        ], Person.prototype, "getName", null);
-        __decorate([
-            double(3)
-        ], Person, "age", void 0);
-        Person = __decorate([
-            aaa,
-            xxx
-        ], Person);
-        return Person;
+        // 没有标记成 abstract 可以去实现  但是抽象属性必须在子类中实现
+        Animal.prototype.eat = function () {
+            console.log('eating');
+        };
+        return Animal;
     }());
-    var person = new Person();
-    // 需要在类中生命 say方法 不然会报错
-    // person.say();
-    console.log(person.name); // ZHANGLI
-    console.log(Person.age); // 30
+    // 父类一般都不会被实例化
+    /** @class */ ((function (_super) {
+        __extends(Cat, _super);
+        function Cat() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        return Cat;
+    })(Animal));
 
 }());
 //# sourceMappingURL=bundle.js.map
