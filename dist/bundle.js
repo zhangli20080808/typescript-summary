@@ -15,103 +15,92 @@
     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
     PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-    /* global Reflect, Promise */
 
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-
-    function __extends(d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    function __decorate(decorators, target, key, desc) {
+        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+        return c > 3 && r && Object.defineProperty(target, key, r), r;
     }
 
-    // es6中的类  类来调用的静态属性 私有的实例属性 共享的原型属性
-    // as 断言成 xxx
-    // ！非空断言
-    // ？链判断运算符 有值取值 没有 返回undefined
-    var Pointer = /** @class */ (function () {
-        function Pointer(x, y) {
-            var args = [];
-            for (var _i = 2; _i < arguments.length; _i++) {
-                args[_i - 2] = arguments[_i];
-            }
-            // 这些参数 函数中的使用方式，这里都可以使用
-            this.x = x;
-            // 因为我们的参数是可选的 undefined不能赋值给number 可以采用 断言 或者类型保护的方式解决这个问题
-            // if (y) {
-            //   this.y = y;
-            // }
-            this.y = y;
-        }
-        return Pointer;
-    }());
-    new Pointer(1, 2, 3, 4, 5);
-    // 类中的修饰符  (public private  protected  限制了访问空间和访问范围) readonly
-    // 1. public 表示父类本身 子类 外面都可以访问这个属性
-    // 2. protected 受保护的 父类本身 子类 能访问到这个属性 外面访问不到
-    // 3. private 私有属性 只有自己能访问到
-    // 如果 constructor 被标识成了 protected、private,则此类不能被new，被标识成了private，则不能被子类继承
-    var Animal = /** @class */ (function () {
-        function Animal(name, age) {
-            this.name = name;
-            this.age = age;
-        }
-        Animal.getName = function () {
-            return 'zhangLi';
+    // 装饰器  拓展属性和方法 或者重写 装饰器就是函数 函数返回函数 执行完成之后还是函数
+    function aaa(target) {
+        console.log('2');
+    }
+    function xxx(target) {
+        console.log(1);
+        // 修饰类本身当前参数就是类 一个参数
+        target.prototype.say = function () {
+            console.log('say');
         };
-        Animal.prototype.say = function () {
-            console.log('父类 say');
-        };
-        // 静态属性和静态方法 通过类来调用的都是静态方法(是可以被继承的)
-        Animal.type = 'animal';
-        return Animal;
-    }());
-    // let animal = new Animal('大象', 100);
-    var Cat = /** @class */ (function (_super) {
-        __extends(Cat, _super);
-        function Cat(name, age, address) {
-            var _this = _super.call(this, name, age) || this;
-            _this.address = '';
-            _this._eat = '';
-            _this.address = address;
-            return _this;
-        }
-        // 子类重写父类的静态方法 调用父类的静态方法 通过super 静态方法中的super指代的是父类
-        Cat.getName = function () {
-            console.log(_super.getName.call(this));
-            return '猫';
-        };
-        Cat.prototype.say = function () {
-            // 原型中的super指代的是父类的原型
-            _super.prototype.say.call(this); // Animal.prototype
-            console.log('cat say');
-        };
-        Object.defineProperty(Cat.prototype, "eat", {
-            // 属性访器 来访问私有属性
+    }
+    /**
+     *
+     * @param target 原型
+     * @param key 属性
+     */
+    function toUpperCase(target, key) {
+        console.log(target, key);
+        var value = target[key];
+        Object.defineProperty(target, key, {
             get: function () {
-                // 原型属性
-                return this._eat;
+                return value.toUpperCase();
             },
             set: function (newVal) {
-                this._eat = newVal;
+                value = newVal;
             },
-            enumerable: false,
-            configurable: true
         });
-        return Cat;
-    }(Animal));
-    var tom = new Cat('tom', 100, 'US');
-    console.log(Cat.getName());
-    // tom.say();
-    tom.eat = 'hello';
-    console.log(tom.eat);
+    }
+    function double(num) {
+        return function (target, key) {
+            //修饰静态属性 target 类
+            var value = target[key];
+            Object.defineProperty(target, key, {
+                get: function () {
+                    return value * num;
+                },
+            });
+        };
+    }
+    /**
+     * 将 getName 转换为可枚举属性
+     * @param target
+     * @param key
+      // configurable: true enumerable: true value: ƒ () writable: true
+     * @param description Object.defineProperty 的第三个参数  configurable enumerable  value
+     */
+    function toEnum(target, key, description) {
+        console.log(target, key, description);
+        // configurable: true enumerable: true value: ƒ () writable: true
+        description.enumerable = false;
+    }
+    var Person = /** @class */ (function () {
+        function Person() {
+            // 比如初始化的时候装饰属性
+            this.name = ' zhangLi'; // 直接默认走set
+        }
+        Person.prototype.getName = function () { };
+        Person.age = 10; // 修改类静态属性时 不会走set方法
+        __decorate([
+            toUpperCase
+        ], Person.prototype, "name", void 0);
+        __decorate([
+            toEnum
+        ], Person.prototype, "getName", null);
+        __decorate([
+            double(3)
+        ], Person, "age", void 0);
+        Person = __decorate([
+            aaa,
+            xxx
+        ], Person);
+        return Person;
+    }());
+    var person = new Person();
+    // 需要在类中生命 say方法 不然会报错
+    // person.say();
+    console.log(person.name); // ZHANGLI
+    console.log(Person.age); // 30
 
 }());
 //# sourceMappingURL=bundle.js.map
