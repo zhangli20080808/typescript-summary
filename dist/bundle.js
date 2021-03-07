@@ -51,6 +51,18 @@
         }
         return Cat;
     })(Animal));
+    // 可以描述对象 函数 类 类的实例
+    var Person2 = /** @class */ (function () {
+        function Person2(name) {
+            this.name = name;
+            this.name = name;
+        }
+        return Person2;
+    }());
+    function createInstance(classN, name) {
+        return new classN(name);
+    }
+    createInstance(Person2, 'zl');
 
 }());
 //# sourceMappingURL=bundle.js.map

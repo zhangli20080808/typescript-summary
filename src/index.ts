@@ -97,7 +97,24 @@ class Cat extends Animal {
   name!: string;
 }
 
-
 // 可以描述对象 函数 类 类的实例
 
+class Person2 {
+  constructor(public name: string) {
+    this.name = name;
+  }
+}
+
+interface IClass<T> {
+  // 表示一个构造函数类型
+  new (name: string): T; // 可以用类当做类型
+}
+
+function createInstance<T>(classN: IClass<T>, name: string) {
+  return new classN(name);
+}
+
+let result = createInstance<Person2>(Person2, 'zl');
+
+// 泛型 就是当调用的时候来传入一个类型 先用一个标识来占位
 export {};
