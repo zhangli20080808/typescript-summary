@@ -1,32 +1,96 @@
-// 类型推断
-// 1. 当赋值时会去推断
-
-// 2. 函数默认会进行推断 函数会根据右边的类型 推到左边的类型 不用标注sum类型
-// 3. 返回值的推断
-const sum = (a: string, b: string): string => {
-  return a + b; // return {a,b}
-};
-
-// 4. 属性推断
-let school = {
-  name: 'zhangLi',
-  age: 20,
-};
-type InputSize = ['large', 'small'];
-const { name } = school; // name:string
-interface ISchool {
-  // 通过索引访问操作符获取类型中的类型
-  name: string;
-  age: number;
-  address: {
-    n: string;
-  };
+// 类型保护  具体到某个类型 类型判断
+// 1. typeof
+function getVal(val: string | number) {
+  if (typeof val === 'string') {
+    val.padStart;
+  } else {
+    val.toFixed;
+  }
 }
-type Test = ISchool['address']['n']; // 接口中取属性 只能使用[]
 
-// 类型的反推 把某个类型拿出来再去使用
-type MySchool = typeof school;
+// 区分类 2. instanceof
+class Dog {}
+class Cat {}
+let getInstance = (passClass: new () => Dog | Cat) => {
+  return new passClass();
+};
 
+let instance = getInstance(Dog);
+if (instance instanceof Dog) {
+  instance;
+} else {
+  instance;
+}
 
-// 类型保护
+// 3. in
+
+// interface Fish {
+//   breathing: string;
+// }
+// interface Bird {
+//   flying: string;
+// }
+// function getType(animal: Fish | Bird) {
+//   if ('breathing' in animal) {
+//     animal; // Fish
+//   } else {
+//     animal; // Bird
+//   }
+// }
+
+// ts 特有的一些 可辨识的类型
+interface IButton1 {
+  class: 'warning';
+  click: string;
+}
+interface IButton2 {
+  class: 'success';
+  move: string;
+}
+
+function getButton(val: IButton1 | IButton2) {
+  if (val.class === 'warning') {
+    // 可以辨识出来是button1
+    val;
+  } else {
+    val;
+  }
+}
+getButton({ class: 'success' });
+
+// is 语法  自定义类型
+
+interface Fish {
+  breathing: string;
+}
+interface Bird {
+  flying: string;
+}
+// 是不是Fish
+function isFish(animal: Fish | Bird): animal is Fish {
+  // 不能直接返回 true或false
+  return 'animal' in animal;
+}
+function getType(animal: Fish | Bird) {
+  if (isFish(animal)) {
+    animal; // Fish
+  } else {
+    animal.flying; // Bird
+  }
+}
+
+//  null 保护 ！非空断言 有一种情况会失效
+
+function getNum(val?: number | null) {
+  val = val || 10.1;
+  function a() {
+    if (val != null) { // ts无法检测内部变量函数，需要再次进行判断
+      val.toFixed;
+    }
+  }
+  a();
+}
+
+// 对代码的完整性进行保护 反推代码 never
+
 export {};
