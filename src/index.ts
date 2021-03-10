@@ -1,96 +1,53 @@
-// 类型保护  具体到某个类型 类型判断
-// 1. typeof
-function getVal(val: string | number) {
-  if (typeof val === 'string') {
-    val.padStart;
-  } else {
-    val.toFixed;
-  }
+// 交叉类型
+interface Person1 {
+    handsome: string;
 }
 
-// 区分类 2. instanceof
-class Dog {}
-class Cat {}
-let getInstance = (passClass: new () => Dog | Cat) => {
-  return new passClass();
+interface Person2 {
+    name: string;
+}
+
+type Person3 = Person1 & Person2;
+let person: Person3 = {
+    // 交叉的部分
+    handsome: '1',
+    name: 'zl',
 };
 
-let instance = getInstance(Dog);
-if (instance instanceof Dog) {
-  instance;
-} else {
-  instance;
+interface Person4 {
+    name: string;
 }
 
-// 3. in
+interface Person5 {
+    name: number;
+}
 
-// interface Fish {
-//   breathing: string;
+// type Person6 = Person4 & Person5; //string  number  ->never
+
+// function xxx(): never {
+//     throw new Error('');
 // }
-// interface Bird {
-//   flying: string;
-// }
-// function getType(animal: Fish | Bird) {
-//   if ('breathing' in animal) {
-//     animal; // Fish
-//   } else {
-//     animal; // Bird
-//   }
-// }
+//
+// let person7: Person6 = {
+//     name: xxx(),
+// };
 
-// ts 特有的一些 可辨识的类型
-interface IButton1 {
-  class: 'warning';
-  click: string;
-}
-interface IButton2 {
-  class: 'success';
-  move: string;
-}
-
-function getButton(val: IButton1 | IButton2) {
-  if (val.class === 'warning') {
-    // 可以辨识出来是button1
-    val;
-  } else {
-    val;
-  }
-}
-getButton({ class: 'success' });
-
-// is 语法  自定义类型
-
-interface Fish {
-  breathing: string;
-}
-interface Bird {
-  flying: string;
-}
-// 是不是Fish
-function isFish(animal: Fish | Bird): animal is Fish {
-  // 不能直接返回 true或false
-  return 'animal' in animal;
-}
-function getType(animal: Fish | Bird) {
-  if (isFish(animal)) {
-    animal; // Fish
-  } else {
-    animal.flying; // Bird
-  }
-}
-
-//  null 保护 ！非空断言 有一种情况会失效
-
-function getNum(val?: number | null) {
-  val = val || 10.1;
-  function a() {
-    if (val != null) { // ts无法检测内部变量函数，需要再次进行判断
-      val.toFixed;
+// 常用 多个对象的合并
+function mixin<T, K>(obj1: T, obj2: K): T & K {
+    let result = {} as T & K;
+    for (let id in obj1) {
+        result[id] = obj1[id] as any;
     }
-  }
-  a();
+    for (let id in obj2) {
+        // @ts-ignore
+        if (!result.hasOwnProperty(id)) {
+            result[id] = obj2[id] as any
+        }
+    }
+    return result;
 }
 
-// 对代码的完整性进行保护 反推代码 never
+// let r = mixin({a: 1}, {b: 2});
+
 
 export {};
