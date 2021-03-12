@@ -17,7 +17,12 @@ let str2: myNum = 'xxx' //比如字符串的功能很多 只要包含了toString
 let myNumber!: myNum   // myNumber只要有toString方法就行 你有就行
 // let str3:string = myNumber // myNum只有一个方法 从安全行考虑 不要从小类型可以赋值给大类型这种思路思考
 
-// 2. 接口类型的兼容
+//
+/**
+ * 2. 接口类型的兼容
+ *  传入的、声明的变量不匹配
+ *  原理： Duck-check 就是说 只要目标类型中声明的属性变量在源类型中存在就兼容
+ */
 interface Animal {
     name: string,
     age: string
@@ -58,7 +63,6 @@ forEach<number>([1, 2, 4], function (item) {
 // 2.接口类型 可以把多的赋予给少的
 // 3.函数的兼容性 可以把参数少的赋予给参数多的函数
 // 4.函数的返回值遵循1，2
-
 
 // 类兼容
 // 只要出现了 private protected 永远不兼容
