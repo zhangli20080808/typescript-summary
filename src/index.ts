@@ -1,54 +1,66 @@
-type Proxy<T> = {
-    get(): T,
-    set(value: T): void
+/**
+ * 差级 A-B  =  Exclude
+ */
+
+type SetDifference<T, U> = T extends U ? never : T
+
+type A = string | number
+type B = number | boolean
+
+type AB = SetDifference<A, B>  // string
+
+type t1 = keyof any; // string | number | symbol
+/**
+ * Omit 忽略  =  Exclude + Pick
+ * keyof T  = name | age | visible
+ * K -> age
+ * SetDifference ->  name | visible
+ * { name: string, visible: boolean }
+ */
+
+type Omit<T, K extends keyof any> = Pick<T, SetDifference<keyof T, K>>
+type IProps = { name: string, age: number, visible: boolean }
+type OmitAgeProps = Omit<IProps, 'age'>
+
+
+/**
+ * Diff 和 Omit很像
+ */
+
+namespace a {
+    type IProps = { name: string, age: number, visible: boolean }
+    type Diff<T extends object, U extends object> = Pick<T, SetDifference<keyof T, keyof U>>
+    type DefaultProps = { age: number }
+    type DiffProps = Diff<IProps, DefaultProps> // {name: string, visible: boolean}
 }
-type InitProxy<T> = {
-    [P in keyof T]: Proxy<T[P]>
+namespace b {
+    // 交叉属性  InterSection
+    type InterSection<T extends object, U extends object> = Pick<T, Extract<keyof U, keyof T> & Extract<keyof T, keyof U>>
+    type IProps = { name: string, age: number, visible: boolean }
+    type DefaultProps = { age: number }
+    type DuplicateProps = InterSection<IProps, DefaultProps> // {age: number}
 }
 
-function initProxy<T>(obj: T): InitProxy<T> {
-    let result = <InitProxy<T>>{}
-    for (const key in obj) {
-        result[key] = {
-            get: () => {
-                console.log('get key 自定义逻辑')
-                return obj[key]
-            },
-            set: (value) => {
-                console.log('set')
-                obj[key] = value
-            }
-        }
-    }
-    console.log(result,obj,'res')
-    return result
+namespace c {
+    // OverWrite 就是用 U的同名属性覆盖T的同名属性
+    type InterSection<T extends object, U extends object> = Pick<T, Extract<keyof U, keyof T> & Extract<keyof T, keyof U>>
+    type Diff<T extends object, U extends object> = Pick<T, SetDifference<keyof T, keyof U>>
+
+    type OldProps = { name: string, age: number, visible: boolean }
+    type NewProps = { age: string, other: string }
+    type OverWrite<T extends object,
+        U extends object,
+        // Diff -> { name: string, visible: boolean } & { age: string }
+        I = Diff<T, U> & InterSection<U, T>> = Pick<I, keyof I>
+    // OverWrite2 覆盖并且把多于的属性也加入其中
+    type OverWrite2<T extends object,
+        U extends object,
+        // Diff -> { name: string, visible: boolean } & { age: string }
+        I = Diff<T, U> & U> = Pick<I, keyof I>
+
+    type ReplaceProps = OverWrite<OldProps, NewProps> // {name: string, visible: boolean, age: number}
+    type ReplaceProps2 = OverWrite2<OldProps, NewProps> // {name: string, visible: boolean, age: string, other: string}
+
+
 }
-
-interface Person {
-    name: string
-    age: number
-}
-
-let person: Person = {
-    name: 'zk',
-    age: 20
-}
-
-let testObj: any = initProxy<Person>(person)
-console.log(testObj.name, 'name')
-// testObj.name = '123'
-// testObj.age = 10
-console.log(testObj, 'result')
-
-
-// function unProxy<T>(t: InitProxy<T>): T {
-//     let result: any = {} as T
-//     for (let key in t) {
-//         result[key] = t[key]
-//     }
-//     return result
-// }
-//
-// let originalPerson = unProxy<Person>(testObj)
-// console.log(originalPerson)
 export {}
