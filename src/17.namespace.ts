@@ -15,18 +15,25 @@
  *2. 模块规范
  *   推荐使用commonjs规范
  *3. 命名空间 -- 本质是一个对象，将一系列相关的属性放在对象上  解决命名冲突
+ *
+ * 空间 namespace 和 module不一样  namespace 在全局中具有唯一性
  */
 export namespace Zoo {
     class Element {
     }
 
+    // export 只想暴露出去这个命名空间下的一些东西 Dog
     export class Dog {
         eat() {
             console.log('zoo dog')
         }
     }
 
-    namespace monkeyArea {
+    export interface User {
+        name: string
+    }
+
+    export namespace monkeyArea {
         export class Monkey {
             eat() {
                 console.log('monkey eating')
