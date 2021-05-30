@@ -108,3 +108,37 @@ function toArray(value: number | string) {
       .map((item) => parseInt(item));
   }
 }
+
+/**
+1. 在我们熟悉的 “JS 函数” 上直接声明参数和返回值：
+2. 直接声明你想要的函数类型
+ */
+const isFalsy = (value: any): boolean => { 
+  return value === 0 ? true : !!value; 
+}; 
+const isFalsy2: (value: any) => boolean = (value) => {
+  return value === 0 ? true : !!value;
+};
+
+// object 除了 number, string, boolean, bigint, symbol, null, or undefined，其他都是 object。
+
+/**
+tuple  tuple 是 “数量固定，类型可以各异” 版的数组。
+典型的元组
+在 React 中有可能使用 tuple 的地方就是 custom hook 的返回值，注意 isHappy → tomIsHappy 以及其他名字的变化，这里使用 tuple 的好处就显现出来了：便于使用者重命名：
+
+const useHappy = () => {
+   //....
+   return [isHappy, makeHappy, makeUnHappy]
+}
+
+const SomeComponent = () => {
+  const [tomIsHappy, makeTomHappy, makeTomUnHappy] = useHappy(false)
+  // ...
+}
+*/
+// 啥时候需要声明类型 理论上来说在我们声明任何变量的时候都需要声明类型（包括普通变量、函数、组件、hook 等等），声明 函数、组件、hook 等需要声明参数 和 返回值的类型。
+
+
+
+

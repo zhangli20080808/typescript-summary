@@ -32,6 +32,7 @@ function breakIng(name: string | null): string {
 // 字符串字面量类型
 
 // unknown -> 可以表示任何值，当我们想用any的时候，用unknown代替，简单来说 unknown 是一个严格版本的any
+// unknown 也不能赋给任何的值，也不能读取任何的方法
 // let b: { [key: string]: unknown }
 // b = {name: 'Jack'}
 // b = () => {}
