@@ -20,20 +20,20 @@ function f(sn: string | null): string {
 }
 
 /**
-   * typeof
-   * 检测的范围 - 包括 string | number | boolean | symbol | undefined| object| function
-   * 局限性 - 不能区分数组合对象
-  
-   * 替代方案 
-  
-    Object.prototype.toString.call({}) // '[object Object]'
-    Object.prototype.toString.call(null); // '[object Null]'
-    Object.prototype.toString.call(new Set()); // '[object Set]'
-    Object.prototype.toString.call(new Map()); // '[object Map]'
-  
-    替代方案仍然解决不了的问题
-    就是无法获取一个自定义的类的实例变量或构造函数的对象变量的真正创建类型，这个时候需要 instanceof 来解决
-   */
+ * typeof
+ * 检测的范围 - 包括 string | number | boolean | symbol | undefined| object| function
+ * 局限性 - 不能区分数组合对象
+
+ * 替代方案 
+
+  Object.prototype.toString.call({}) // '[object Object]'
+  Object.prototype.toString.call(null); // '[object Null]'
+  Object.prototype.toString.call(new Set()); // '[object Set]'
+  Object.prototype.toString.call(new Map()); // '[object Map]'
+
+  替代方案仍然解决不了的问题
+  就是无法获取一个自定义的类的实例变量或构造函数的对象变量的真正创建类型，这个时候需要 instanceof 来解决
+ */
 
 function getVal(first: string | number, second: string | number) {
   if (typeof first === 'string' || typeof second === 'string') {
@@ -46,10 +46,10 @@ function getVal(first: string | number, second: string | number) {
 }
 
 /**
-   * 区分类 2. instanceof - instanceof类型保护是通过构造函数来细化类型的一种方式
-     格式： 对象变量 instanceof 类名或者函数名
-     主要作用：准确判断一种自定义函数 或者类创建的对象变量的数据类型
-   */
+ * 区分类 2. instanceof - instanceof类型保护是通过构造函数来细化类型的一种方式
+   格式： 对象变量 instanceof 类名或者函数名
+   主要作用：准确判断一种自定义函数 或者类创建的对象变量的数据类型
+ */
 
 class Dog {}
 
@@ -222,12 +222,12 @@ export const isPromise = <T = any>(val: unknown): val is Promise<T> => {
 };
 
 /**
-  满足一下四点 - 类型守卫，静态方法
-   * 1. 当对象字符串属性有空格时，就去掉空格后输出
-     2. 当遇到对象方法时，就执行，其他数据类型的属性一律直接输出
-     3. 只有对象中包含 allowInput 属性时，才允许输出
-     4. 函数接受到外部传入的null、undefined、{}时，直接输出不是一个合法的对象
-   */
+满足一下四点 - 类型守卫，静态方法
+ * 1. 当对象字符串属性有空格时，就去掉空格后输出
+   2. 当遇到对象方法时，就执行，其他数据类型的属性一律直接输出
+   3. 只有对象中包含 allowInput 属性时，才允许输出
+   4. 函数接受到外部传入的null、undefined、{}时，直接输出不是一个合法的对象
+ */
 
 function processObjOutput(obj: any) {
   if (
