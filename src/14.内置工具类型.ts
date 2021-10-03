@@ -127,6 +127,58 @@ let result: Person2 = { name: 'zl', id: 1, age: 20 };
 type KeyOfPerson = keyof Person2; // "name" | "id" | "age"
 type ResultInfo = Pick<Person2, 'name' | 'id'>;
 
+// example TODO
+interface ToDo {
+  title: string;
+  completed: boolean;
+  desc: string;
+}
+let todoList: ToDo[] = [
+  {
+    title: '开发管理',
+    completed: true,
+    desc: '13123123',
+  },
+  {
+    title: '测试',
+    completed: true,
+    desc: '456',
+  },
+];
+type Record<T> = {
+  [P in keyof any]: T;
+};
+
+type TodoRecordType = Record<ToDo>;
+let todoTypeRecord: TodoRecordType = {};
+todoList.map((todo) => {
+  todoTypeRecord[todo['title']] = todo;
+});
+console.log(todoTypeRecord, 'todoTypeRecord');
+
+// pick出  completed 和 title 为 预览做准备
+type TRestObj = Record<Pick<ToDo, 'title' | 'completed'>>;
+function convertSubTodoItemList() {
+  // reduce 第二个参数是 Todo 类型，所以可以解构成{ title, completed }
+  return todoList.reduce((prev, { title, completed }) => {
+    return {
+      ...prev,
+      [title]: { title, completed },
+    };
+  }, {} as TRestObj);
+}
+
+// 方法二
+let subTodoItemList: Record<Pick<ToDo, 'title' | 'completed'>> = {
+  title: { title: 'df', completed: false },
+};
+function convertSubTodoItemList2(subTodoItemList: TRestObj = {}) {
+  todoList.forEach(({ title, completed }) => {
+    subTodoItemList[title] = { title, completed };
+  });
+  return subTodoItemList;
+}
+
 /** ====================================  Exclude - 移除传入的键值 =========================**/
 /**
  * type Exclude<T, U> = T extends U ? never : T;
