@@ -1,6 +1,7 @@
 /**
  * 1. promise 回调实现  1. 实现actionType 2. Promise回调实现 3. 测试类实现 4.then方法
    5. 同步级联 then 方法
+   6. 单级异步 + then方法收集 - 单级then方法
  */
 
 import {
@@ -16,6 +17,9 @@ class Promise<T = any> {
   public resolve_executor_value!: any;
   public reject_executor_value!: any;
   public reason!: undefined;
+  public onResolvedCallbacks: (() => void)[] = []; //存储成功的的所有的回调 只有pending的时候才存储
+  public onRejectedCallbacks: (() => void)[] = []; //存储失败的的所有的回调
+
   constructor(executor: ExecutorType) {
     //executor 默认传入 一开始就执行 默认是 pending
     this.status = 'pending';
@@ -26,6 +30,7 @@ class Promise<T = any> {
         this.status = 'fulfilled';
         // value[10] = 100;
         this.resolve_executor_value = value;
+        this.onResolvedCallbacks.forEach((cb) => cb());
       }
     };
     this.reject = (reason?: any) => {
@@ -57,6 +62,20 @@ class Promise<T = any> {
       if (this.status === 'rejected') {
         result = rejectInThen(this.reject_executor_value);
         reject(result);
+      }
+
+      if (this.status === 'pending') {
+        // console.log('pending state')
+        // 等会成功的时候 再让他执行 分别将成功和失败的回调存起来
+        this.onResolvedCallbacks.push(() => {
+          result = resolveInThen(this.resolve_executor_value);
+          console.log('异步中执行的结果', result);
+          
+        });
+        this.onRejectedCallbacks.push(() => {
+          result = rejectInThen(this.reject_executor_value);
+          console.log('异步中执行的结果', result);
+        });
       }
     });
   }
