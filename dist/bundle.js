@@ -1,10 +1,22 @@
 (function () {
   'use strict';
 
+  // https://zhuanlan.zhihu.com/p/382699039
+  var isFunction = function (val) {
+      return typeof val === 'function';
+  };
+  var isObject = function (val) {
+      return val !== null && typeof val === 'object';
+  };
+  var isPromise = function (val) {
+      return isObject(val) && isFunction(val.then);
+  };
+
   /**
    * 1. promise 回调实现  1. 实现actionType 2. Promise回调实现 3. 测试类实现 4.then方法
      5. 同步级联 then 方法
      6. 单级异步 + then方法收集 - 单级then方法
+     7. 多个异步 + 多级then方法收集 - 多级then方法
    */
   var Promise$1 = /** @class */ (function () {
       function Promise(executor) {
@@ -14,7 +26,7 @@
           //executor 默认传入 一开始就执行 默认是 pending
           this.status = 'pending';
           this.resolve = function (value) {
-              console.log('进入resolve函数', value, _this.status);
+              // console.log('进入resolve函数', value, this.status);
               if (_this.status === 'pending') {
                   _this.status = 'fulfilled';
                   // value[10] = 100;
@@ -44,7 +56,7 @@
           var _this = this;
           return new Promise(function (resolve, reject) {
               var result;
-              console.log(_this, 'this'); // 外部的
+              // console.log(this, 'this'); // 外部的
               if (_this.status === 'fulfilled') {
                   result = resolveInThen(_this.resolve_executor_value);
                   // 重新调用 resolve 会重新走 executor
@@ -57,15 +69,36 @@
               if (_this.status === 'pending') {
                   // console.log('pending state')
                   // 等会成功的时候 再让他执行 分别将成功和失败的回调存起来
-                  _this.onResolvedCallbacks.push(function () {
-                      result = resolveInThen(_this.resolve_executor_value);
-                      console.log('异步中执行的结果', result);
-                  });
-                  _this.onRejectedCallbacks.push(function () {
-                      result = rejectInThen(_this.reject_executor_value);
-                      console.log('异步中执行的结果', result);
-                  });
+                  _this.processManyAsyncAndSync(resolveInThen, rejectInThen, resolve, reject);
               }
+          });
+      };
+      /**
+       * 执行多个异步方法 + 多级 then的处理方法
+       * @param resolveInThen
+       * @param rejectInThen
+       * @param resolve
+       * @param reject
+       */
+      Promise.prototype.processManyAsyncAndSync = function (resolveInThen, rejectInThen, resolve, reject) {
+          var _this = this;
+          var result;
+          this.onResolvedCallbacks.push(function () {
+              result = resolveInThen(_this.resolve_executor_value);
+              console.log('异步中执行的结果', result);
+              if (isPromise(result)) {
+                  setTimeout(function () {
+                      console.log(result, 'result');
+                      resolve(result.resolve_executor_value);
+                  }, 5);
+              }
+              else {
+                  resolve(result);
+              }
+          });
+          this.onRejectedCallbacks.push(function () {
+              result = rejectInThen(_this.reject_executor_value);
+              console.log('异步中执行的结果', result);
           });
       };
       return Promise;
@@ -84,21 +117,23 @@
   promise
       .then(function (resolveData1) {
       console.log(resolveData1, '第一个then成功了');
-      return 'ok1';
+      // return 'ok1';
+      return new Promise$1(function (resolve, reject) {
+          setTimeout(function () {
+              resolve('zl');
+          }, 5);
+      });
   }, function (err) {
       console.log(err, 'err');
       return 'fail1';
+  })
+      .then(function (resolveData2) {
+      console.log(resolveData2, '第二个then成功了');
+      return 'ok2';
+  }, function (err) {
+      console.log(err, '第二个then失败了');
+      return 'fail2';
   });
-  // .then(
-  //   (resolveData2) => {
-  //     console.log(resolveData2, '第二个then成功了');
-  //     return 'ok2';
-  //   },
-  //   (err) => {
-  //     console.log(err, '第二个then失败了');
-  //     return 'fail2';
-  //   }
-  // );
   // .then(
   //   (resolveData3) => {
   //     console.log(resolveData3, '第三个then成功了');

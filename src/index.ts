@@ -15,23 +15,28 @@ promise
   .then(
     (resolveData1) => {
       console.log(resolveData1, '第一个then成功了');
-      return 'ok1';
+      // return 'ok1';
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve('zl');
+        }, 5);
+      });
     },
     (err) => {
       console.log(err, 'err');
       return 'fail1';
     }
   )
-  // .then(
-  //   (resolveData2) => {
-  //     console.log(resolveData2, '第二个then成功了');
-  //     return 'ok2';
-  //   },
-  //   (err) => {
-  //     console.log(err, '第二个then失败了');
-  //     return 'fail2';
-  //   }
-  // );
+  .then(
+    (resolveData2) => {
+      console.log(resolveData2, '第二个then成功了');
+      return 'ok2';
+    },
+    (err) => {
+      console.log(err, '第二个then失败了');
+      return 'fail2';
+    }
+  );
 // .then(
 //   (resolveData3) => {
 //     console.log(resolveData3, '第三个then成功了');
@@ -44,4 +49,3 @@ promise
 //   console.log(err, 'err');
 // });
 console.log('end');
-

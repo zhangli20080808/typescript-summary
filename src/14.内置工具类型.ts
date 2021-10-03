@@ -145,11 +145,11 @@ let todoList: ToDo[] = [
     desc: '456',
   },
 ];
-type Record<T> = {
+type MyRecord<T> = {
   [P in keyof any]: T;
 };
 
-type TodoRecordType = Record<ToDo>;
+type TodoRecordType = MyRecord<ToDo>;
 let todoTypeRecord: TodoRecordType = {};
 todoList.map((todo) => {
   todoTypeRecord[todo['title']] = todo;
@@ -157,7 +157,7 @@ todoList.map((todo) => {
 console.log(todoTypeRecord, 'todoTypeRecord');
 
 // pick出  completed 和 title 为 预览做准备
-type TRestObj = Record<Pick<ToDo, 'title' | 'completed'>>;
+type TRestObj = MyRecord<Pick<ToDo, 'title' | 'completed'>>;
 function convertSubTodoItemList() {
   // reduce 第二个参数是 Todo 类型，所以可以解构成{ title, completed }
   return todoList.reduce((prev, { title, completed }) => {
@@ -169,7 +169,7 @@ function convertSubTodoItemList() {
 }
 
 // 方法二
-let subTodoItemList: Record<Pick<ToDo, 'title' | 'completed'>> = {
+let subTodoItemList: MyRecord<Pick<ToDo, 'title' | 'completed'>> = {
   title: { title: 'df', completed: false },
 };
 function convertSubTodoItemList2(subTodoItemList: TRestObj = {}) {
@@ -334,7 +334,11 @@ Record 和 object 的区别
  1. Record具备泛型，获取值可以有自动提示功能，object无法实现提示
  2. Record获取的是索引参数类型，所以可以赋值为空 object也可以，但是再次赋值会报错
  */
+let objTest: object = {};
+objTest.then = 'fd';
 
+let objTest2: Record<any, any> = {};
+objTest2.then = '123'
 /**
  Record和Map的区别
  实际开发在显示数据时候，数据扁平化我们采用 Record，主要是正好符合 Record的特性
