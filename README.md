@@ -1,5 +1,7 @@
 # typescript-summary
 typescript学习总结
+[基础ts学习模板](https://github.com/zhangli20080808/ts-parcel-template)
+[学习文章](https://juejin.cn/post/6989796543880495135#heading-2)
 ## 初始化
 1. npm install typescript -g 
 2. npm install ts-node -g 

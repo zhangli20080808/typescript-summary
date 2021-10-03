@@ -3,9 +3,13 @@
  * 1. 描述对象的属性、形状
  * 2. 根据接口 提供一些新的类型，供别人使用 
 
- *
- * 接口可以实现 被继承 type不能
- * type可以写联合类型
+ * 相同点 - 都可以描述一个函数或者对象
+   不同点 - 接口可以被实现，被继承 , type不能，但是type可以通过交叉类型 来实现 extends的行为，并且两者并不是相互独立的
+   也就是说 interface 可以 extends type, type 也可以 与 interface 类型 交叉
+ * 
+   不同点 
+ * 1. type 可以声明基本类型别名，联合类型，元组等类型
+   2. interface 能够声明合并，type不行
  * 原则： 一般 能用接口就是用接口，不能就换成type
  *
  * interface可以描述 (属性、方法、类)
@@ -21,6 +25,30 @@
  * 8. class实现接口 和 继承接口有什么区别？
  *    JavaScript是单继承的，如果你继承了一个类就不能再继承其他类，不过可以实现多个接口
  */
+
+/* ===============  type 与 type 交叉 =================*/
+
+type Name1 = {
+  name: string;
+};
+type User1 = Name & { age: number };
+
+/* ===============  interface extends type =================*/
+type Name = {
+  name: string;
+};
+interface User extends Name {
+  age: number;
+}
+let user: User = { name: 'zl', age: 10 };
+
+/* ===============  type 与 interface 交叉 =================*/
+interface Name3 {
+  name: string;
+}
+type User3 = Name & {
+  age: number;
+}
 
 /* ===============  描述函数 =================*/
 interface IFullName {
@@ -42,7 +70,6 @@ const fn: ICount = () => {
 fn.count = 0;
 console.log(fn());
 console.log(fn());
-
 
 /* ===============  接口特性 =================*/
 interface IVeg {
@@ -169,4 +196,47 @@ setPersonName(person, 'zl'); // 不报错
 // 但是如果以一个缓存变量的形式传入，就没有这么严格了，只要有就行，多余的属性没有关系
 
 
+
+// 不同点
+// type 可以声明基本类型别名，联合类型，元组等类型
+// 基本类型别名
+type Name4 = string
+
+// 联合类型
+interface Dog {
+    // wong();
+}
+interface Cat {
+    // miao();
+}
+
+type Pet = Dog | Cat
+
+// 具体定义数组每个位置的类型
+type PetList = [Dog, Pet]
+
+// type 语句中还可以使用 typeof 获取实例的 类型进行赋值
+
+// 当你想获取一个变量的类型时，使用 typeof
+let div = document.createElement('div');
+type B = typeof div
+
+
+// interface 可以而 type 不行 -能够声明合并
+interface User {
+  name: string
+  age: number
+}
+
+interface User {
+  sex: string
+}
+
+/*
+User 接口为 {
+  name: string
+  age: number
+  sex: string
+}
+*/
 export {};

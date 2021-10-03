@@ -8,7 +8,7 @@ function createArray<T>(times: number, val: T): Array<T> {
 }
 
 // 使用方式 2种 复杂场景可能需要手动传入
-let res = createArray<string>(3, 'abc'); // 不传入会自动推到
+let res = createArray<string>(3, 'abc') ; // 不传入会自动推到
 
 // 类型推断
 let res2 = createArray(3, '111');
