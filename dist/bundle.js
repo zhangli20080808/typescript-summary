@@ -38,6 +38,7 @@
               if (_this.status === 'pending') {
                   _this.status = 'rejected';
                   _this.reject_executor_value = reason;
+                  _this.onRejectedCallbacks.forEach(function (cb) { return cb(); });
               }
           };
           try {
@@ -52,6 +53,38 @@
               // throw new Error('程序停止......');
           }
       }
+      Promise.all = function (promises) {
+          return new Promise(function (resolve, reject) {
+              var allPromiseResolveSuccessValue = [];
+              promises.forEach(function (promise, index) {
+                  promise.then(function (resolveSuccess) {
+                      ProcessData(resolveSuccess, index);
+                  }, function (rejectFail) {
+                      // 只要有一个promise对象的resolve执行失败，就执行reject
+                      reject(rejectFail);
+                      return;
+                  });
+              });
+              function ProcessData(resolveSuccess, index) {
+                  allPromiseResolveSuccessValue[index] = resolveSuccess;
+                  if (index === promises.length - 1) {
+                      resolve(allPromiseResolveSuccessValue);
+                  }
+              }
+          });
+      };
+      Promise.resolve = function (value) {
+          // resolve里面放一个promise会等待这个promise执行完
+          return new Promise(function (resolve, reject) {
+              resolve(value);
+          });
+      };
+      Promise.reject = function (reason) {
+          // reject 并不会解析 promise值
+          return new Promise(function (resolve, reject) {
+              reject(reason);
+          });
+      };
       Promise.prototype.then = function (resolveInThen, rejectInThen) {
           var _this = this;
           return new Promise(function (resolve, reject) {
@@ -86,66 +119,59 @@
           this.onResolvedCallbacks.push(function () {
               result = resolveInThen(_this.resolve_executor_value);
               console.log('异步中执行的结果', result);
+              // 异步处理方式 如何采用同步的方式去处理呢？
               if (isPromise(result)) {
-                  setTimeout(function () {
-                      console.log(result, 'result');
-                      resolve(result.resolve_executor_value);
-                  }, 5);
+                  result.then(function (resolveSuccess) {
+                      resolve(resolveSuccess);
+                  }, function (rejectSuccess) {
+                      reject(rejectSuccess);
+                  });
               }
               else {
                   resolve(result);
               }
+              // resolve(result.resolve_executor_value);
+              // if (isPromise(result)) {
+              //   setTimeout(() => {
+              //     console.log(result, 'result');
+              //     resolve(result.resolve_executor_value);
+              //   }, 5);
+              // } else {
+              //   resolve(result);
+              // }
           });
           this.onRejectedCallbacks.push(function () {
               result = rejectInThen(_this.reject_executor_value);
-              console.log('异步中执行的结果', result);
+              // console.log('异步中执行的结果', result);
+              reject(result);
           });
       };
       return Promise;
   }());
 
-  var promise = new Promise$1(function (resolve, reject) {
-      // resolve('陈宫1');
-      // throw new Error('123');
-      // reject('我失败了');
-      // 异步过程
-      // 发布、订阅，就是当真正执行 resolve的时候 我们再去执行 then的回调，先将then的方法的回调订阅下来
+  var promise1 = new Promise$1(function (resolve, reject) {
+      console.log('第一个promise同步区域');
       setTimeout(function () {
-          resolve('陈宫1');
-      }, 1000);
+          resolve('setTimeout的第一个promise');
+      }, 5);
   });
-  promise
-      .then(function (resolveData1) {
-      console.log(resolveData1, '第一个then成功了');
-      // return 'ok1';
-      return new Promise$1(function (resolve, reject) {
-          setTimeout(function () {
-              resolve('zl');
-          }, 5);
-      });
-  }, function (err) {
-      console.log(err, 'err');
-      return 'fail1';
-  })
-      .then(function (resolveData2) {
-      console.log(resolveData2, '第二个then成功了');
-      return 'ok2';
-  }, function (err) {
-      console.log(err, '第二个then失败了');
-      return 'fail2';
+  var promise2 = new Promise$1(function (resolve, reject) {
+      console.log('第二个promise同步区域');
+      setTimeout(function () {
+          reject('setTimeout的第二个promise');
+      }, 5);
   });
-  // .then(
-  //   (resolveData3) => {
-  //     console.log(resolveData3, '第三个then成功了');
-  //   },
-  //   (err) => {
-  //     console.log(err, '第三个then失败了');
-  //   }
-  // );
-  // .catch((err) => {
-  //   console.log(err, 'err');
-  // });
-  console.log('end');
+  var promise3 = new Promise$1(function (resolve, reject) {
+      console.log('第三个promise同步区域');
+      setTimeout(function () {
+          resolve('setTimeout的第三个promise');
+      }, 5);
+  });
+  Promise$1.all([promise2, promise1, promise3]).then(function (resolveValue) {
+      console.log('promise->all-resolve', resolveValue);
+  }, function (rejectValue) {
+      console.log('promise->all-reject', rejectValue);
+  });
 
 }());
 //# sourceMappingURL=bundle.js.map

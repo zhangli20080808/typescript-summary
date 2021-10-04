@@ -1,51 +1,51 @@
 import Promise from './promise/index';
-
-let promise = new Promise((resolve, reject) => {
-  // resolve('陈宫1');
-  // throw new Error('123');
-  // reject('我失败了');
-  // 异步过程
-  // 发布、订阅，就是当真正执行 resolve的时候 我们再去执行 then的回调，先将then的方法的回调订阅下来
+let promise1 = new Promise((resolve, reject) => {
+  console.log('第一个promise同步区域');
   setTimeout(() => {
-    resolve('陈宫1');
-  }, 1000);
+    resolve('setTimeout的第一个promise');
+  }, 5);
+});
+let promise2 = new Promise<void>((resolve, reject) => {
+  console.log('第二个promise同步区域');
+  setTimeout(() => {
+    reject('setTimeout的第二个promise');
+  }, 5);
 });
 
-promise
-  .then(
-    (resolveData1) => {
-      console.log(resolveData1, '第一个then成功了');
-      // return 'ok1';
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve('zl');
-        }, 5);
-      });
-    },
-    (err) => {
-      console.log(err, 'err');
-      return 'fail1';
-    }
-  )
-  .then(
-    (resolveData2) => {
-      console.log(resolveData2, '第二个then成功了');
-      return 'ok2';
-    },
-    (err) => {
-      console.log(err, '第二个then失败了');
-      return 'fail2';
-    }
-  );
-// .then(
-//   (resolveData3) => {
-//     console.log(resolveData3, '第三个then成功了');
-//   },
-//   (err) => {
-//     console.log(err, '第三个then失败了');
-//   }
-// );
-// .catch((err) => {
-//   console.log(err, 'err');
-// });
-console.log('end');
+let promise3 = new Promise<void>((resolve, reject) => {
+  console.log('第三个promise同步区域');
+  setTimeout(() => {
+    resolve('setTimeout的第三个promise');
+  }, 5);
+});
+
+Promise.all([promise2, promise1, promise3]).then(
+  (resolveValue) => {
+    console.log('promise->all-resolve', resolveValue);
+  },
+  (rejectValue) => {
+    console.log('promise->all-reject', rejectValue);
+  }
+);
+
+// Promise.resolve(100)
+//   .finally(() => {
+//     return new Promise((resolve, reject) => {
+//       setTimeout(() => {
+//         resolve('hello'); // 我这个地方 resolve 这个hello 其实没啥用
+//       }, 2000);
+//     });
+//   })
+//   .then(
+//     (data) => {
+//       console.log(data, 'data');
+//     },
+//     (fail) => {
+//       console.log(fail, 'fail');
+//     }
+//   )
+//   .catch((err) => {
+//     console.log(err, 'catch');
+//   });
+
+export {};

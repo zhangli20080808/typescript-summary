@@ -22,6 +22,44 @@ class Promise<T = any> {
   public onResolvedCallbacks: (() => void)[] = []; //存储成功的的所有的回调 只有pending的时候才存储
   public onRejectedCallbacks: (() => void)[] = []; //存储失败的的所有的回调
 
+  static all(promises: Promise[]): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let allPromiseResolveSuccessValue: Array<any> = [];
+      promises.forEach((promise, index) => {
+        promise.then(
+          (resolveSuccess) => {
+            ProcessData(resolveSuccess, index);
+          },
+          (rejectFail) => {
+            // 只要有一个promise对象的resolve执行失败，就执行reject
+            reject(rejectFail);
+            return;
+          }
+        );
+      });
+      function ProcessData(resolveSuccess: any, index: number) {
+        allPromiseResolveSuccessValue[index] = resolveSuccess;
+        if (index === promises.length - 1) {
+          resolve(allPromiseResolveSuccessValue);
+        }
+      }
+    });
+  }
+
+  static resolve(value: any): Promise<any> {
+    // resolve里面放一个promise会等待这个promise执行完
+    return new Promise((resolve, reject) => {
+      resolve(value);
+    });
+  }
+
+  static reject(reason: any): Promise<any> {
+    // reject 并不会解析 promise值
+    return new Promise((resolve, reject) => {
+      reject(reason);
+    });
+  }
+
   constructor(executor: ExecutorType) {
     //executor 默认传入 一开始就执行 默认是 pending
     this.status = 'pending';
@@ -39,6 +77,7 @@ class Promise<T = any> {
       if (this.status === 'pending') {
         this.status = 'rejected';
         this.reject_executor_value = reason;
+        this.onRejectedCallbacks.forEach((cb) => cb());
       }
     };
     try {
@@ -96,24 +135,62 @@ class Promise<T = any> {
     this.onResolvedCallbacks.push(() => {
       result = resolveInThen(this.resolve_executor_value);
       console.log('异步中执行的结果', result);
+      // 异步处理方式 如何采用同步的方式去处理呢？
       if (isPromise(result)) {
-        setTimeout(() => {
-          console.log(result, 'result');
-          resolve(result.resolve_executor_value);
-        }, 5);
+        result.then(
+          (resolveSuccess) => {
+            resolve(resolveSuccess);
+          },
+          (rejectSuccess) => {
+            reject(rejectSuccess);
+          }
+        );
       } else {
         resolve(result);
       }
+      // resolve(result.resolve_executor_value);
+
+      // if (isPromise(result)) {
+      //   setTimeout(() => {
+      //     console.log(result, 'result');
+      //     resolve(result.resolve_executor_value);
+      //   }, 5);
+      // } else {
+      //   resolve(result);
+      // }
     });
     this.onRejectedCallbacks.push(() => {
       result = rejectInThen(this.reject_executor_value);
-      console.log('异步中执行的结果', result);
+      // console.log('异步中执行的结果', result);
+      reject(result);
     });
   }
 
   // catch(callback){
 
   //   callback()
+  // }
+
+  /**
+   * 无论如何都会执行 还可以跟then 有点类似于catch
+   */
+  // finally(callback: any) {
+  //   return this.then(
+  //     (value) => {
+  //       return Promise.resolve(callback().then(() => value));
+  //     },
+  //     (err) => {
+  //       return Promise.reject(
+  //         callback().then(() => {
+  //           throw err;
+  //         })
+  //       );
+  //     }
+  //   );
+  // }
+  //就是一个成功的then
+  // catch(callback: Function) {
+  //   return this.then(null, callback);
   // }
 }
 
